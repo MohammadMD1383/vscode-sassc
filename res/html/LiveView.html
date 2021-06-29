@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>LiveView</title>
+
+		<link rel="stylesheet" href="{{style}}" />
+		<script src="{{script1}}"></script>
+		<script src="{{script2}}"></script>
+
+		<style>
+			* {
+				font-family: var(--vscode-editor-font-family) !important;
+				font-size: var(--vscode-editor-font-size) !important;
+				font-weight: var(--vscode-editor-font-size) !important;
+			}
+
+			body {
+				position: relative;
+				padding: 0;
+				margin: 10px;
+			}
+
+			pre {
+				background-color: transparent !important;
+				z-index: 10;
+			}
+
+			div#highlighter {
+				position: absolute;
+				color: transparent;
+				display: inline-block;
+				background-color: yellow;
+				z-index: -1;
+				transition: all 0.2s ease-in-out;
+			}
+
+			span#determiner {
+				opacity: 0;
+				pointer-events: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<pre class="language-javascript"></pre>
+
+		<div id="highlighter"></div>
+
+		<span id="determiner"></span>
+	</body>
+
+	<script>
+		/** @type {HTMLPreElement} */
+		const codeHolder = document.querySelector("pre");
+
+		/** @type {HTMLDivElement} */
+		const highlighter = document.getElementById("highlighter");
+
+		/** @type{HTMLSpanElement} */
+		const determiner = document.getElementById("determiner");
+
+		const COUNT = 200;
+		determiner.textContent = "0".repeat(COUNT);
+		const lineHeight = determiner.offsetHeight,
+			charWidth = determiner.offsetWidth / COUNT;
+		determiner.remove();
+
+		window.addEventListener("message", (event) => {
+			switch (event.data.kind) {
+				case "code":
+					codeHolder.innerHTML = event.data.code;
+					hljs.highlightElement(codeHolder);
+					break;
+				case "highlight":
+					let highlight = event.data.highlight;
+					const lineNo = highlight.line - 1,
+						start = highlight.column,
+						end = highlight.lastColumn === null ? codeHolder.textContent.split("\n")[lineNo].length : highlight.lastColumn + 1;
+
+					doHighlight(lineNo, start, end - start);
+					break;
+			}
+		});
+
+		function doHighlight(row, col, length) {
+			if (length === 0) length = 1;
+
+			highlighter.style.width = `${length * charWidth}px`;
+			highlighter.style.height = `${lineHeight}px`;
+			highlighter.style.top = `${row * lineHeight}px`;
+			highlighter.style.left = `${col * charWidth}px`;
+		}
+	</script>
+</html>

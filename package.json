@@ -1,25 +1,41 @@
 {
-  "name": "vscode-sassc",
-	"displayName": "vscode-sassc",
+	"publisher": "MohammadMD",
+	"name": "vscode-sassc",
+	"displayName": "VSCode Sass Compiler",
 	"description": "",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"engines": {
-		"vscode": "^1.57.0"
+		"vscode": "^1.50.0"
 	},
 	"categories": [
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:vscode-sassc.helloWorld"
+		"onCommand:vscode-sassc.singleCompilationCompileCurrentFile"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "vscode-sassc.helloWorld",
-				"title": "Hello World"
+				"command": "vscode-sassc.singleCompilationCompileCurrentFile",
+				"title": "Compile Current File",
+				"enablement": "editorLangId == scss",
+				"category": "VSCode SASSC",
+				"icon": {
+					"dark": "res/icon/compile-single-file/sassc-compile-single-file@dark.svg",
+					"light": "res/icon/compile-single-file/sassc-compile-single-file@light.svg"
+				}
 			}
-		]
+		],
+		"menus": {
+			"editor/title": [
+				{
+					"command": "vscode-sassc.singleCompilationCompileCurrentFile",
+					"when": "editorLangId == scss",
+					"group": "navigation"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -29,14 +45,19 @@
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js"
 	},
+	"dependencies": {
+		"sass": "^1.35.1",
+		"source-map": "^0.7.3"
+	},
 	"devDependencies": {
-		"@types/vscode": "^1.57.0",
 		"@types/glob": "^7.1.3",
 		"@types/mocha": "^8.2.2",
 		"@types/node": "14.x",
-		"eslint": "^7.27.0",
+		"@types/sass": "^1.16.0",
+		"@types/vscode": "^1.50.0",
 		"@typescript-eslint/eslint-plugin": "^4.26.0",
 		"@typescript-eslint/parser": "^4.26.0",
+		"eslint": "^7.27.0",
 		"glob": "^7.1.7",
 		"mocha": "^8.4.0",
 		"typescript": "^4.3.2",
