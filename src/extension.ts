@@ -2,10 +2,32 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import * as sm from "source-map";
-import { getFileUri, getThemeName } from "./util/util";
-import { compileSassText, getCssFileName } from "./util/sassHelper";
+import { checkForSassConfig, getFileUri, getThemeName } from "./util/util";
+import { compileProject, compileSassText, getCssFileName } from "./util/sassHelper";
 
 export function activate(context: vscode.ExtensionContext) {
+	if (vscode.workspace.name) {
+		const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 4);
+		statusBarItem.command = "vscode-sassc.compileProject";
+		statusBarItem.text = "$(zap) Compile Project";
+		statusBarItem.tooltip = "SASS/SCSS";
+		context.subscriptions.push(statusBarItem);
+
+		checkForSassConfig(statusBarItem);
+
+		const createFileListener = vscode.workspace.onDidCreateFiles(() => {
+			checkForSassConfig(statusBarItem);
+		});
+
+		const deleteFileListener = vscode.workspace.onDidDeleteFiles(() => {
+			checkForSassConfig(statusBarItem);
+		});
+
+		const renameFileListener = vscode.workspace.onDidRenameFiles(() => {
+			checkForSassConfig(statusBarItem);
+		});
+	}
+
 	context.subscriptions.push(
 		vscode.commands.registerCommand("vscode-sassc.singleCompilationCompileCurrentFile", async () => {
 			const items: Array<vscode.QuickPickItem> = [
@@ -164,6 +186,71 @@ export function activate(context: vscode.ExtensionContext) {
 					);
 					break;
 			}
+		}),
+
+		vscode.commands.registerCommand("vscode-sassc.compileProject", async () => {
+			// find all tsconfig files in project
+			const sassConfigFiles = (await vscode.workspace.findFiles("**/sassconfig.json")).map((uri) => {
+				return uri.fsPath;
+			});
+			let sassConfigPath: string;
+
+			// let user choose which one to compile
+			if (sassConfigFiles.length > 1) {
+				const items: Array<vscode.QuickPickItem> = sassConfigFiles.map((item, i) => {
+					return {
+						label: path.relative(vscode.workspace.workspaceFolders![0].uri.fsPath, item),
+						description: i.toString(),
+						detail: item,
+					};
+				});
+
+				const selection = await vscode.window.showQuickPick(items, {
+					canPickMany: false,
+					title: "Compile Project",
+					placeHolder: "Choose sassconfig root",
+				});
+				if (!selection) return;
+
+				sassConfigPath = sassConfigFiles[+selection.description!];
+			}
+			// else is always `1`. because the availability of this command is to exist at least one sassconfig file
+			else {
+				sassConfigPath = sassConfigFiles[0];
+			}
+
+			vscode.window.withProgress(
+				{
+					location: vscode.ProgressLocation.Notification,
+					cancellable: false,
+				},
+				async (progress) => {
+					progress.report({ message: "Compiling...", increment: 33 });
+					const sassSearchLocation = path.relative(
+						vscode.workspace.workspaceFolders![0].uri.fsPath,
+						path.join(path.dirname(sassConfigPath), "**/*.{sass,scss}")
+					);
+					const sassFiles = (await vscode.workspace.findFiles(sassSearchLocation)).map((uri) => {
+						return uri.fsPath;
+					});
+
+					const sassConfig = JSON.parse(fs.readFileSync(sassConfigPath).toString());
+
+					progress.report({ increment: 33 });
+					await compileProject(sassFiles, sassConfig, path.dirname(sassConfigPath));
+
+					progress.report({ message: "Done!", increment: 34 });
+					return new Promise<void>((resolve) => {
+						setTimeout(() => {
+							resolve();
+						}, 1000);
+					});
+				}
+			);
+		}),
+
+		vscode.commands.registerCommand("vscode-sassc.watchProject", () => {
+			vscode.window.showInformationMessage("Hello :)");
 		})
 	);
 }
