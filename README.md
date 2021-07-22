@@ -49,7 +49,7 @@ Compile sass/scss in visual studio code without need of installing **Node.js**
 
 Here is the syntax of `sassconfig.json` file:
 
-```json
+```ts
 {
 	outDir?: string,
 	removeComments?: boolean,
