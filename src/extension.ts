@@ -3,9 +3,11 @@ import * as path from "path";
 import * as fs from "fs";
 import * as sm from "source-map";
 import { checkForSassConfig, getFileUri, getThemeName } from "./util/util";
-import { compileProject, compileSassText, getCssFileName } from "./util/sassHelper";
+import { compileProject, compileSassText, destroyWatch, getActiveWatches, getCssFileName, watchProject } from "./util/sassHelper";
+import { Options, renderSync } from "sass";
 
 export function activate(context: vscode.ExtensionContext) {
+	// check for workspace containing desired file
 	if (vscode.workspace.name) {
 		const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 4);
 		statusBarItem.command = "vscode-sassc.compileProject";
@@ -189,7 +191,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}),
 
 		vscode.commands.registerCommand("vscode-sassc.compileProject", async () => {
-			// find all tsconfig files in project
+			// find all sassconfig files in project
 			const sassConfigFiles = (await vscode.workspace.findFiles("**/sassconfig.json")).map((uri) => {
 				return uri.fsPath;
 			});
@@ -249,8 +251,63 @@ export function activate(context: vscode.ExtensionContext) {
 			);
 		}),
 
-		vscode.commands.registerCommand("vscode-sassc.watchProject", () => {
-			vscode.window.showInformationMessage("Hello :)");
+		vscode.commands.registerCommand("vscode-sassc.watchProject", async ({ fsPath }: vscode.Uri) => {
+			const sassConfig = JSON.parse(fs.readFileSync(fsPath).toString());
+			await watchProject(fsPath, sassConfig);
+			vscode.window.showInformationMessage("Project successfully added to watches!");
+		}),
+
+		vscode.commands.registerCommand("vscode-sassc.showActiveWatches", () => {
+			// @ts-ignore
+			const _this = this as { outputChannel: vscode.OutputChannel };
+			if (typeof _this.outputChannel === "undefined") {
+				_this.outputChannel = vscode.window.createOutputChannel("Active Watches");
+			}
+
+			const activeWatches = getActiveWatches();
+			if (activeWatches.length > 0) activeWatches.forEach((watch) => _this.outputChannel.appendLine(watch));
+			else _this.outputChannel.appendLine("No active watches.");
+
+			_this.outputChannel.show();
+		}),
+
+		vscode.commands.registerCommand("vscode-sassc.destroyWatch", async () => {
+			const activeWatches = getActiveWatches();
+
+			if (activeWatches.length === 0) {
+				vscode.window.showInformationMessage("No active Watches.");
+				return;
+			}
+
+			const workspaceRoot = vscode.workspace.workspaceFolders![0].uri.fsPath;
+			const items: Array<vscode.QuickPickItem> = activeWatches.map((watch, i) => {
+				return {
+					label: path.relative(workspaceRoot, watch),
+					detail: watch,
+					description: i.toString(),
+				};
+			});
+
+			const selection = await vscode.window.showQuickPick(items, {
+				canPickMany: false,
+				title: "Destroy Watch",
+				placeHolder: "Choose watch to destroy...",
+			});
+
+			if (!selection) return;
+
+			destroyWatch(activeWatches[+selection.description!]);
+			vscode.window.showInformationMessage("Watch destroyed.");
+		}),
+
+		// extension api
+
+		vscode.commands.registerCommand("vscode-sassc.api.render", (options: Options) => {
+			try {
+				return renderSync(options);
+			} catch (error) {
+				return error;
+			}
 		})
 	);
 }

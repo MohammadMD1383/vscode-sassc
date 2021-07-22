@@ -1,9 +1,15 @@
 {
 	"publisher": "MohammadMD",
 	"name": "vscode-sassc",
-	"displayName": "VSCode Sass Compiler",
-	"description": "",
+	"displayName": "VSCode SASS/SCSS Compiler",
+	"description": "A tool for compiling sass/scss without need of NodeJS to be installed",
+	"icon": "res/icon/logo@128.png",
 	"version": "1.0.0",
+	"repository": "https://github.com/MohammadMD1383/vscode-sassc",
+	"homepage": "https://github.com/MohammadMD1383/vscode-sassc/blob/master/README.md",
+	"bugs": {
+		"url": "https://github.com/MohammadMD1383/vscode-sassc/issues"
+	},
 	"engines": {
 		"vscode": "^1.50.0"
 	},
@@ -36,6 +42,18 @@
 				"command": "vscode-sassc.watchProject",
 				"title": "Watch Project",
 				"enablement": "vscode-sassc.isSassProject && resourceFilename == sassconfig.json",
+				"category": "VSCode SASSC"
+			},
+			{
+				"command": "vscode-sassc.showActiveWatches",
+				"title": "Show Active Watches",
+				"enablement": "vscode-sassc.isSassProject",
+				"category": "VSCode SASSC"
+			},
+			{
+				"command": "vscode-sassc.destroyWatch",
+				"title": "Destroy Watch",
+				"enablement": "vscode-sassc.isSassProject",
 				"category": "VSCode SASSC"
 			}
 		],

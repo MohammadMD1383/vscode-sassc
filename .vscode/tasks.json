@@ -15,6 +15,39 @@
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"label": "package",
+			"type": "shell",
+			"command": "vsce package",
+			"problemMatcher": [],
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"group": "build"
+		},
+		{
+			"label": "package list",
+			"type": "shell",
+			"command": "vsce ls",
+			"isBackground": true,
+			"problemMatcher": [],
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"group": "build"
 		}
+
 	]
 }

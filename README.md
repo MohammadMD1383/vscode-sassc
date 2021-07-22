@@ -1,70 +1,89 @@
-# vscode-sassc README
+# Visual Studio Code SASS/SCSS Compiler
 
-This is the README for your extension "vscode-sassc". After writing up a brief description, we recommend including the following sections.
+Compile sass/scss in visual studio code without need of installing **Node.js**
 
-## Features
+## Table Of Contents
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+-   [Features](#features)
+-   [How To](#how-to)
+-   [Config File](#config-file)
+-   [Configurations](#configurations)
+-   [Extension API](#extension-api)
+-   [Known Issues](#known-issues)
 
-For example if there is an image subfolder under your extension project workspace:
+### Features
 
-\!\[feature X\]\(images/feature-x.png\)
+-   **Single Compilation**: compile any sass/scss file without need of being in a sass/scss project:
+    -   see in vscode output
+    -   compile it next to current sass/scss file
+    -   compile it anywhere you want
+-   **Live View**: see the compiled css next to sass/scss as you edit
+-   **Compile Project**<sup>[\*](#reference)</sup>: compile a sass/scss project
+-   **Watch Project**<sup>[\*](#reference)</sup>: use sass/scss `watch` feature to compile your project
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+### How To
 
-## Requirements
+**Single Compilation**-**Live View**:
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+1. open any `.{sass,scss}` file
+2. click the <img src="https://github.com/MohammadMD1383/vscode-sassc/blob/master/res/icon/compile-single-file/png/sassc-compile-single-file%40dark.png" alt="Image" width="15" style="vertical-align:middle;"> icon at top right of editor
+3. choose the compilation mode
 
-## Extension Settings
+**Compile Project**:
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+1. open a vscode workspace(folder)
+2. add a `sassconfig.json` file at the root of your sass/scss files
+3. a status bar item appears (Compile Project)
+4. click on that and your project will be compiled
 
-For example:
+**Watch Project**:
 
-This extension contributes the following settings:
+1. follow steps 1 and 2 of previous section
+2. right click on `sassconfig.json` file
+3. click _Watch Project_ and your project will be watched
+    - open commands by pressing <kbd>F1</kbd>
+        - **destroy watch**: destroys an active watch
+        - **show active watches**: shows the current active watches
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+### Config File
 
-## Known Issues
+Here is the syntax of `sassconfig.json` file:
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+```json
+{
+	outDir?: string,
+	removeComments?: boolean,
+	sourceMaps?: boolean,
+	indentType?: "space" | "tab",
+	indentWidth?: number,
+	linefeed?: "cr" | "crlf" | "lf" | "lfcr",
+	omitSourceMapUrl?: boolean,
+	outputStyle?: "expanded" | "compressed"
+}
+```
 
-## Release Notes
+### Configurations
 
-Users appreciate release notes as you update your extension.
+-   Single Compilation Configurations
+    -   `vscode-sassc.singleCompilation.useIndentedStyle`
 
-### 1.0.0
+### Extension API
 
-Initial release of ...
+This extension provides some commands that can be used by other extensions
 
-### 1.0.1
+Current Commands:
 
-Fixed issue #.
+-   `vscode-sassc.api.render`
+    -   parameters
+        -   `sass.Options` options: see [sassCompileOptions](https://sass-lang.com/documentation/js-api#options)
+    -   returns `sass.Result`: see [sassResult](https://sass-lang.com/documentation/js-api#result-object)
 
-### 1.1.0
+### Known Issues
 
-Added features X, Y, and Z.
+-   nothing yet!
 
------------------------------------------------------------------------------------------------------------
-## Following extension guidelines
+---
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+<p id="reference">
+*: needs <code>sassconfig.json</code> file to be in the root of sass/scss project
+</p>

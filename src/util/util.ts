@@ -1,4 +1,4 @@
-import { join } from "path";
+import { isAbsolute, join, relative } from "path";
 import { ColorThemeKind, commands, ExtensionContext, StatusBarItem, Uri, window, workspace } from "vscode";
 
 export function getFileUri(context: ExtensionContext, path: string): Uri {
@@ -26,4 +26,15 @@ export async function checkForSassConfig(statusBarItem?: StatusBarItem): Promise
 		statusBarItem?.hide();
 	}
 	return contains;
+}
+
+/**
+ * determines whether `path1` is sub directory of `path2` or not
+ * @param path1 condition path
+ * @param path2 main path
+ * @returns boolean
+ */
+export function isSubDirOf(path1: string, path2: string): boolean {
+	const path = relative(path2, path1);
+	return !!path && !path.startsWith("..") && !isAbsolute(path);
 }
