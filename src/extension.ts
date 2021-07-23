@@ -47,6 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 			if (!selection) return;
 
 			const isUntitled = vscode.window.activeTextEditor!.document.isUntitled;
+			const isIndentedSyntax = vscode.window.activeTextEditor!.document.languageId === "sass";
 			let fileName: string;
 			if (isUntitled) fileName = vscode.window.activeTextEditor!.document.fileName;
 			else fileName = path.basename(vscode.window.activeTextEditor!.document.fileName);
@@ -72,7 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 					liveViewWebView.webview.html = htmlFileContent;
 
-					let compiledCode = compileSassText(vscode.window.activeTextEditor!.document.getText());
+					let compiledCode = compileSassText(vscode.window.activeTextEditor!.document.getText(), isIndentedSyntax);
 
 					liveViewWebView.webview.postMessage({
 						kind: "code",
@@ -85,7 +86,7 @@ export function activate(context: vscode.ExtensionContext) {
 							return;
 						}
 
-						compiledCode = compileSassText(event.document.getText());
+						compiledCode = compileSassText(event.document.getText(), isIndentedSyntax);
 
 						try {
 							liveViewWebView.webview.postMessage({
@@ -133,7 +134,7 @@ export function activate(context: vscode.ExtensionContext) {
 						},
 						() => {
 							const outputChannel = vscode.window.createOutputChannel(`SASSC: ${fileName}`);
-							const compileOutput = compileSassText(vscode.window.activeTextEditor!.document.getText());
+							const compileOutput = compileSassText(vscode.window.activeTextEditor!.document.getText(), isIndentedSyntax);
 							outputChannel.append(compileOutput instanceof Error ? compileOutput.message : compileOutput.css.toString());
 							outputChannel.show();
 							return Promise.resolve();
@@ -156,7 +157,7 @@ export function activate(context: vscode.ExtensionContext) {
 						async () => {
 							if (vscode.window.activeTextEditor!.document.isDirty) await vscode.window.activeTextEditor!.document.save();
 
-							const compiledCode = compileSassText(vscode.window.activeTextEditor!.document.getText());
+							const compiledCode = compileSassText(vscode.window.activeTextEditor!.document.getText(), isIndentedSyntax);
 
 							const newFilePath = path.join(
 								path.dirname(vscode.window.activeTextEditor!.document.fileName),
@@ -180,7 +181,7 @@ export function activate(context: vscode.ExtensionContext) {
 							title: "Compiling...",
 						},
 						() => {
-							const compiledCode = compileSassText(vscode.window.activeTextEditor!.document.getText());
+							const compiledCode = compileSassText(vscode.window.activeTextEditor!.document.getText(), isIndentedSyntax);
 							fs.writeFileSync(dest.fsPath, compiledCode instanceof Error ? compiledCode.message : compiledCode.css);
 
 							return Promise.resolve();

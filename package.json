@@ -4,7 +4,7 @@
 	"displayName": "VSCode SASS/SCSS Compiler",
 	"description": "A tool for compiling sass/scss without need of NodeJS to be installed",
 	"icon": "res/icon/logo@128.png",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"repository": "https://github.com/MohammadMD1383/vscode-sassc",
 	"homepage": "https://github.com/MohammadMD1383/vscode-sassc/blob/master/README.md",
 	"bugs": {
@@ -25,7 +25,7 @@
 			{
 				"command": "vscode-sassc.singleCompilationCompileCurrentFile",
 				"title": "Compile Current File",
-				"enablement": "editorLangId == scss",
+				"enablement": "editorLangId == scss || editorLangId == sass",
 				"category": "VSCode SASSC",
 				"icon": {
 					"dark": "res/icon/compile-single-file/sassc-compile-single-file@dark.svg",
@@ -61,7 +61,7 @@
 			"editor/title": [
 				{
 					"command": "vscode-sassc.singleCompilationCompileCurrentFile",
-					"when": "editorLangId == scss",
+					"when": "editorLangId == scss || editorLangId == sass",
 					"group": "navigation"
 				}
 			],
@@ -72,16 +72,6 @@
 					"group": "2_workspace"
 				}
 			]
-		},
-		"configuration": {
-			"title": "VSCode SASSC",
-			"properties": {
-				"vscode-sassc.singleCompilation.useIndentedStyle": {
-					"type": "boolean",
-					"default": false,
-					"description": "Specifies whether to use sass's indented style or not"
-				}
-			}
 		}
 	},
 	"scripts": {

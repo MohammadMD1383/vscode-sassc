@@ -1,11 +1,10 @@
-import { existsSync, fstat, mkdirSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { basename, dirname, isAbsolute, join, relative } from "path";
 import { renderSync, Result } from "sass";
 import { Disposable, OutputChannel, TextDocument, window, workspace } from "vscode";
-import { isIndentedStyle } from "./configurations";
 import { isSubDirOf } from "./util";
 
-export function compileSassText(text: string): Result | Error {
+export function compileSassText(text: string, isIndentedSyntax: boolean): Result | Error {
 	try {
 		return renderSync({
 			data: text,
@@ -14,7 +13,7 @@ export function compileSassText(text: string): Result | Error {
 			indentWidth: 4,
 			sourceMap: true,
 			omitSourceMapUrl: true,
-			indentedSyntax: isIndentedStyle(),
+			indentedSyntax: isIndentedSyntax,
 		});
 	} catch (e) {
 		return e;

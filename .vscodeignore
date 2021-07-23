@@ -8,4 +8,5 @@ src/**
 **/.eslintrc.json
 **/*.map
 **/*.ts
+.github/
 TODO.md

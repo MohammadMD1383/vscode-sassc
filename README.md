@@ -7,7 +7,6 @@ Compile sass/scss in visual studio code without need of installing **Node.js**
 -   [Features](#features)
 -   [How To](#how-to)
 -   [Config File](#config-file)
--   [Configurations](#configurations)
 -   [Extension API](#extension-api)
 -   [Known Issues](#known-issues)
 
@@ -61,11 +60,6 @@ Here is the syntax of `sassconfig.json` file:
 	outputStyle?: "expanded" | "compressed"
 }
 ```
-
-### Configurations
-
--   Single Compilation Configurations
-    -   `vscode-sassc.singleCompilation.useIndentedStyle`
 
 ### Extension API
 
