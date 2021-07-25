@@ -4,7 +4,7 @@
 	"displayName": "VSCode SASS/SCSS Compiler",
 	"description": "A tool for compiling sass/scss without need of NodeJS to be installed",
 	"icon": "res/icon/logo@128.png",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"repository": "https://github.com/MohammadMD1383/vscode-sassc",
 	"homepage": "https://github.com/MohammadMD1383/vscode-sassc/blob/master/README.md",
 	"bugs": {

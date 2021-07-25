@@ -253,6 +253,11 @@ export function activate(context: vscode.ExtensionContext) {
 		}),
 
 		vscode.commands.registerCommand("vscode-sassc.watchProject", async ({ fsPath }: vscode.Uri) => {
+			if (getActiveWatches().includes(fsPath)) {
+				vscode.window.showWarningMessage("This project is already added to watches!");
+				return;
+			}
+
 			const sassConfig = JSON.parse(fs.readFileSync(fsPath).toString());
 			await watchProject(fsPath, sassConfig);
 			vscode.window.showInformationMessage("Project successfully added to watches!");
@@ -266,9 +271,10 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 
 			const activeWatches = getActiveWatches();
+
+			_this.outputChannel.clear();
 			if (activeWatches.length > 0) activeWatches.forEach((watch) => _this.outputChannel.appendLine(watch));
 			else _this.outputChannel.appendLine("No active watches.");
-
 			_this.outputChannel.show();
 		}),
 

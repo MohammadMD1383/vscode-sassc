@@ -38,3 +38,7 @@ export function isSubDirOf(path1: string, path2: string): boolean {
 	const path = relative(path2, path1);
 	return !!path && !path.startsWith("..") && !isAbsolute(path);
 }
+
+export function isSassFile(file: string) {
+	return file.endsWith(".sass") || file.endsWith(".scss");
+}

@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { basename, dirname, isAbsolute, join, relative } from "path";
 import { renderSync, Result } from "sass";
 import { Disposable, OutputChannel, TextDocument, window, workspace } from "vscode";
-import { isSubDirOf } from "./util";
+import { isSassFile, isSubDirOf } from "./util";
 
 export function compileSassText(text: string, isIndentedSyntax: boolean): Result | Error {
 	try {
@@ -114,7 +114,7 @@ export async function watchProject(configPath: string, config: SassConfig) {
 
 	watches[configPath] = workspace.onDidSaveTextDocument((document: TextDocument) => {
 		const file = document.fileName;
-		if (!isSubDirOf(file, root) || basename(file).endsWith("_")) return;
+		if (!isSubDirOf(file, root) || !isSassFile(file) || basename(file).endsWith("_")) return;
 		compileAndSaveFile(root, file, config, true);
 	});
 }
